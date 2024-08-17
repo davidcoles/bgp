@@ -214,7 +214,6 @@ func (s *Session) update_stats(d time.Duration, r []netip.Addr, n map[netip.Addr
 }
 
 func (s *Session) session(id IP, peer string) chan _update {
-	const F = "session"
 
 	updates := make(chan _update, 10)
 

@@ -81,12 +81,12 @@ func dup(i []IP) (o []IP) {
 	return
 }
 
-func NewPool(routerid IP, peers map[string]Parameters, rib_ []IP, log BGPNotify) *Pool {
+func NewPool(routerid IP, peers map[string]Parameters, rib []IP, log BGPNotify) *Pool {
 	const F = "pool"
 
 	var nul IP
 
-	rib := dup(rib_)
+	rib = dup(rib) // create a local copy of the RIB
 
 	if routerid == nul {
 		return nil
