@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"time"
 
-	"bgp"
+	"github.com/davidcoles/bgp"
 )
 
 /*
