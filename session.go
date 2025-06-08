@@ -84,14 +84,8 @@ func toaddr(in []IP) (out []netip.Addr) {
 	return
 }
 
-func NewSession(id IP, peer string, p Parameters, r []IP, l BGPNotify) *Session {
-
-	var rib []netip.Addr
-	for _, i := range r {
-		rib = append(rib, netip.AddrFrom4(i))
-	}
-
-	s := &Session{p: p, rib: toaddr(r), logs: l, status: Status{State: IDLE}, update: newupdate(p, rib)}
+func NewSession(id IP, peer string, p Parameters, r []netip.Addr, l BGPNotify) *Session {
+	s := &Session{p: p, rib: dup(r), logs: l, status: Status{State: IDLE}, update: newupdate(p, dup(r))}
 	s.c = s.session(id, peer)
 	return s
 }
@@ -112,8 +106,8 @@ func (s *Session) Status() Status {
 	return s.status
 }
 
-func (s *Session) RIB(r []IP) {
-	s.rib = toaddr(r)
+func (s *Session) RIB(r []netip.Addr) {
+	s.rib = dup(r)
 	s.c <- newupdate(s.p, s.rib)
 }
 

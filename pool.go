@@ -36,7 +36,7 @@ type status = map[string]Status
 
 type Pool struct {
 	c chan map[string]Parameters
-	r chan []IP
+	r chan []netip.Addr
 	s chan chan status
 	l BGPNotify
 }
@@ -59,29 +59,21 @@ func (p *Pool) Configure(c map[string]Parameters) {
 }
 
 func (p *Pool) RIB(r []netip.Addr) {
-	var f []IP
-
-	for _, a := range r {
-		if a.Is4() {
-			f = append(f, a.As4())
-		}
-	}
-
-	p.r <- f
+	p.r <- dup(r)
 }
 
 func (p *Pool) Close() {
 	close(p.c)
 }
 
-func dup(i []IP) (o []IP) {
+func dup(i []netip.Addr) (o []netip.Addr) {
 	for _, x := range i {
 		o = append(o, x)
 	}
 	return
 }
 
-func NewPool(routerid IP, peers map[string]Parameters, rib []IP, log BGPNotify) *Pool {
+func NewPool(routerid IP, peers map[string]Parameters, rib []netip.Addr, log BGPNotify) *Pool {
 	const F = "pool"
 
 	var nul IP
@@ -92,7 +84,7 @@ func NewPool(routerid IP, peers map[string]Parameters, rib []IP, log BGPNotify) 
 		return nil
 	}
 
-	pool := &Pool{c: make(chan map[string]Parameters), r: make(chan []IP), s: make(chan chan status), l: log}
+	pool := &Pool{c: make(chan map[string]Parameters), r: make(chan []netip.Addr), s: make(chan chan status), l: log}
 
 	go func() {
 
